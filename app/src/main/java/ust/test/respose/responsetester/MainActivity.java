@@ -17,13 +17,17 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.ArrayList;
 
+import fcm.Firebase_InstanceID_Service;
 import rest.ApiClient;
 import rest.ApiInterface;
 import rest.ArticleResponse;
 import rest.CommentResponse;
 import rest.DetailViewResponse;
+import rest.FCMResponse;
 import rest.LikesResponse;
 import rest.MyPlaceResponse;
 import rest.UploadBoardResponse;
@@ -44,14 +48,18 @@ public class MainActivity extends AppCompatActivity {
 
         //spinner(테스트 선택)
         final String[] methodList = {
-                                  "PostTestForMyplace"
-                                , "PostTestForLikes"
-                                , "PostTestForLikesMine"
+                "PostTestForMyplace"
+                , "PostTestForLikes"
+                , "PostTestForLikesMine"
+                , "PostTokenRegiserForFCM"
+                , "PostTestUploadForFCM"
         };
         final String[][] postList = {
-                                  {"tag", "myplace_uid", "request_uid", "bottom_article" }
-                                , {"tag", "uid", "bottom_item" }
-                                , {"tag", "uid", "bottom_item" }
+                {"tag", "myplace_uid", "request_uid", "bottom_article" }
+                , {"tag", "uid", "bottom_item" }
+                , {"tag", "uid", "bottom_item" }
+                , {"tag", "uid", "token", "login_state" }
+                , {"tag", "uid" }
         };
 
         ArrayList<String> method_array = new ArrayList<String>();
@@ -108,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
                 } else if(seleted_method_num == 2){
                     PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
                 } else if(seleted_method_num == 3){
+//                    PostTokenRegiserForFCM(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
+                    PostTokenRegiserForFCM("token_register", param_post_values[1], param_post_values[2], param_post_values[3]);
+                } else if(seleted_method_num == 4){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestUploadForFCM("test_upload", param_post_values[1]);
                 }
 
 
@@ -151,6 +164,22 @@ public class MainActivity extends AppCompatActivity {
 
 //                PostTestForLikesMine( "like_mine", "149", "0");
 //                PostTestForLikesMine( "like_mine", "115", "0");
+            }
+        });
+
+        //button(테스트 실행)
+        Button fcm_btn = (Button)findViewById(R.id.fcm_token);
+        fcm_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+//                FirebaseMessaging.getInstance().subscribeToTopic("news");
+                FirebaseInstanceId.getInstance().getToken();
+                Log.e("FCM Token : ", FirebaseInstanceId.getInstance().getToken());
+
+                Firebase_InstanceID_Service fservices = new Firebase_InstanceID_Service();
+                fservices.onTokenRefresh();
+
             }
         });
     }
@@ -714,6 +743,58 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LikesResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+
+
+
+    private void PostTokenRegiserForFCM(String tag, String temp1, String temp2, String temp3){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<FCMResponse> call = apiService.postTokenRegistserForFCM(tag, temp1, temp2, temp3);
+
+        call.enqueue(new Callback<FCMResponse>() {
+            @Override
+            public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                FCMResponse fcm = response.body();
+
+                Toast.makeText(getApplicationContext(), fcm.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), fcm.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("fcm", fcm.getError());
+                Log.e("fcm", fcm.getError_msg());
+            }
+
+            @Override
+            public void onFailure(Call<FCMResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+    private void PostTestUploadForFCM(String tag, String temp1){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<FCMResponse> call = apiService.postTestUploadForFCM(tag, temp1);
+
+        call.enqueue(new Callback<FCMResponse>() {
+            @Override
+            public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                FCMResponse fcm = response.body();
+
+                Toast.makeText(getApplicationContext(), fcm.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), fcm.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                if(fcm.getFcm_server_error() != null) Log.e("fcm", fcm.getFcm_server_error());
+                Log.e("fcm", fcm.getError());
+                Log.e("fcm", fcm.getError_msg());
+            }
+
+            @Override
+            public void onFailure(Call<FCMResponse> call, Throwable t) {
                 // Log error here since request failed
                 Log.e("tag", t.toString());
             }

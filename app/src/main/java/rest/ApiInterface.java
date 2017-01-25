@@ -100,6 +100,17 @@ public interface ApiInterface {
     Call<LikesResponse> postLike(@Field("tag") String tag
                                             , @Field("uid") String myplace_uid
                                             , @Field("bottom_item") String bottom_item);
+
+    @FormUrlEncoded
+    @POST("fcm/fcm.php")
+    Call<FCMResponse> postTokenRegistserForFCM(@Field("tag") String tag
+                                            , @Field("uid") String uid
+                                            , @Field("token") String token
+                                            , @Field("login_state") String login_state);
+    @FormUrlEncoded
+    @POST("fcm/fcm.php")
+    Call<FCMResponse> postTestUploadForFCM(@Field("tag") String tag
+                                            , @Field("uid") String uid);
     /**
      * upload.php로 데이터 전송
      * @param tag -> tag를 통해 프로필인지 아티클인지 판별 (프로필 -> profile, 아티클 -> article
