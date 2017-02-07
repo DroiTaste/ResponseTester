@@ -31,10 +31,11 @@ public interface ApiInterface {
     //post테스팅용
     @FormUrlEncoded
     @POST("login/login.php")
-    Call<UserResponse> postTestLogin(@Field("tag") String tag
+    Call<UserResponse> postTestRegister(@Field("tag") String tag
                                         , @Field("fb_id") String fb_id
                                         , @Field("kt_id") String kt_id
-                                        , @Field("email") String email);
+                                        , @Field("email") String email
+                                        , @Field("nick_name") String nick_name);
     //post테스팅용
     @FormUrlEncoded
     @POST("timeline/timeline_btn.php")

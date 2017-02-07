@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 , "PostTestForLikesMine"
                 , "PostTokenRegiserForFCM"
                 , "PostTestUploadForFCM"
+                , "PostTestRegister"
         };
         final String[][] postList = {
                 {"tag", "uid", "article_id"}
@@ -62,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "token", "login_state" }
                 , {"tag", "uid" }
+                , {"tag", "fb_id", "kt_id", "email", "nick_name" }
         };
+        //test
 
         ArrayList<String> method_array = new ArrayList<String>();
         for ( String method : methodList) {
@@ -125,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if(seleted_method_num == 5){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
                     PostTestUploadForFCM("test_upload", param_post_values[1]);
+                } else if(seleted_method_num == 6){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
                 }
 
 
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//
+
 //    private void PostTest(String tag, String temp1, String temp2, String temp3){
 ////    private void PostTest(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6
 ////                            , String temp7, String temp8, String temp9, String temp10){
@@ -232,6 +238,46 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
+    private void PostTestRegister(String tag, String temp1, String temp2, String temp3, String temp4){
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        Call<UserResponse> call = apiService.postTestRegister(tag, temp1, temp2, temp3, temp4);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                UserResponse user1 = response.body();
+
+                Toast.makeText(getApplicationContext(), user1.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), user1.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("error", user1.getError());
+                Log.e("error", user1.getError_msg());
+
+                if( null != user1.getUser()) {
+                    Log.e("user_info", user1.getUser().getUid());
+                    Log.e("user_info", user1.getUser().getName());
+                    Log.e("user_info", user1.getUser().getGender());
+                    Log.e("user_info", user1.getUser().getEmail());
+                    Log.e("user_info", user1.getUser().getNick_name());
+                    Log.e("user_info", user1.getUser().getPhone_number());
+                    Log.e("user_info", user1.getUser().getCreated_at());
+
+                    Log.e("user_info", user1.getUser().getLogin_method());
+                    Log.e("user_info", user1.getUser().getFb_id());
+                    Log.e("user_info", user1.getUser().getKt_id());
+                    Log.e("user_info", user1.getUser().getProfile_img());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+
 //
 //    private void PostTestLikeList(String tag, String temp1, String temp2){
 //        ApiInterface apiService =
