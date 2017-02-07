@@ -27,6 +27,8 @@ public class Firebase_Messaging_Service extends com.google.firebase.messaging.Fi
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //추가한것
         sendNotification(remoteMessage.getData().get("message"));
+
+        Log.e( "fcm_message", remoteMessage.getData().get("u_message") );
     }
 
     private void sendNotification(String messageBody) {

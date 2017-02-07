@@ -48,14 +48,16 @@ public class MainActivity extends AppCompatActivity {
 
         //spinner(테스트 선택)
         final String[] methodList = {
-                "PostTestForMyplace"
+                "PostTestForDetailView"
+                , "PostTestForMyplace"
                 , "PostTestForLikes"
                 , "PostTestForLikesMine"
                 , "PostTokenRegiserForFCM"
                 , "PostTestUploadForFCM"
         };
         final String[][] postList = {
-                {"tag", "myplace_uid", "request_uid", "bottom_article" }
+                {"tag", "uid", "article_id"}
+                , {"tag", "myplace_uid", "request_uid", "bottom_article" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "token", "login_state" }
@@ -105,20 +107,22 @@ public class MainActivity extends AppCompatActivity {
 
                 String[] param_post_values = new String[param_layout.getChildCount()];
                 for (int i = 0; i < param_layout.getChildCount(); i++) {
-                    LinearLayout temp_linear = (LinearLayout)param_layout.getChildAt(i);
-                    param_post_values[i] = ((EditText)temp_linear.findViewById(R.id.param_input_text)).getText().toString();
+                    LinearLayout temp_linear = (LinearLayout) param_layout.getChildAt(i);
+                    param_post_values[i] = ((EditText) temp_linear.findViewById(R.id.param_input_text)).getText().toString();
                 }
 
-                if(seleted_method_num == 0){
+                if (seleted_method_num == 0) {
+                    PostTestForDetailView(param_post_values[0], param_post_values[1], param_post_values[2]);
+                }else if(seleted_method_num == 1){
                     PostTestForMyplace(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
-                } else if(seleted_method_num == 1){
-                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
                 } else if(seleted_method_num == 2){
-                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
                 } else if(seleted_method_num == 3){
+                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 4){
 //                    PostTokenRegiserForFCM(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
                     PostTokenRegiserForFCM("token_register", param_post_values[1], param_post_values[2], param_post_values[3]);
-                } else if(seleted_method_num == 4){
+                } else if(seleted_method_num == 5){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
                     PostTestUploadForFCM("test_upload", param_post_values[1]);
                 }
@@ -313,67 +317,70 @@ public class MainActivity extends AppCompatActivity {
 //    }
 //
 //
-//    private void PostTestForDetailView(String tag, String temp1, String temp2){
-//        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-//
-//        Call<DetailViewResponse> call = apiService.postDetailView(tag, temp1, temp2);
-//
-//        call.enqueue(new Callback<DetailViewResponse>() {
-//            @Override
-//            public void onResponse(Call<DetailViewResponse> call, Response<DetailViewResponse> response) {
-//                DetailViewResponse article = response.body();
-//
-//                Toast.makeText(getApplicationContext(), article.getError(), Toast.LENGTH_SHORT).show();
-//                Toast.makeText(getApplicationContext(), article.getError_msg(), Toast.LENGTH_SHORT).show();
-//
-//                Log.e("tag", article.getArticle().getUid());
-//                Log.e("tag", article.getArticle().getNick_name());
-//                Log.e("tag", article.getArticle().getProfile_img());
-//                Log.e("tag", article.getArticle().getProfile_img_thumb());
-//
-//                Log.e("tag", article.getArticle().getArticle_id());
-//                Log.e("tag", article.getArticle().getArticle_photo_url());
-//                Log.e("tag", article.getArticle().getArticle_photo_thumb_url());
-//                Log.e("tag", article.getArticle().getArticle_text());
-//                Log.e("tag", article.getArticle().getArticle_created_at());
-//
-//                Log.e("tag", article.getArticle().getArticle_like_cnt());
-//                Log.e("tag", article.getArticle().getArticle_view_cnt());
-//                Log.e("tag", article.getArticle().getArticle_comment_cnt());
-//
-//                Log.e("tag", article.getArticle().getArticle_like_state());
-//                Log.e("tag", article.getArticle().getArticle_follow_state());
-//
-//                for(int i=0; i<article.getComment().length; i++) {
-//                    Log.e("tag", article.getComment()[i].getUid());
-//                    Log.e("tag", article.getComment()[i].getNick_name());
-//                    Log.e("tag", article.getComment()[i].getProfile_img_thumb());
-//                    Log.e("tag", article.getComment()[i].getComment_id());
-//                    Log.e("tag", article.getComment()[i].getComment_text());
-//                    Log.e("tag", article.getComment()[i].getComment_created_at());
-//                }
-//                Log.e("tag", article.getGrid_article()[2].getArticle_id());
-//                Log.e("tag", article.getGrid_article()[2].getArticle_photo_thumb_url());
-//
-//                if(article.isComment_error()) {
-//                    Log.e("tag", "comment_error : true");
-//                } else {
-//                    Log.e("tag", "comment_error : false");
-//                }
-//                if(article.isGrid_error()) {
-//                    Log.e("tag", "grid_error : true");
-//                } else {
-//                    Log.e("tag", "grid_error : false");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<DetailViewResponse> call, Throwable t) {
-//                // Log error here since request failed
-//                Log.e("tag", t.toString());
-//            }
-//        });
-//    }
+    private void PostTestForDetailView(String tag, String temp1, String temp2){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<DetailViewResponse> call = apiService.postDetailView(tag, temp1, temp2);
+
+        call.enqueue(new Callback<DetailViewResponse>() {
+            @Override
+            public void onResponse(Call<DetailViewResponse> call, Response<DetailViewResponse> response) {
+                DetailViewResponse article = response.body();
+
+                Toast.makeText(getApplicationContext(), article.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), article.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("article", article.getArticle().getUid());
+                Log.e("article", article.getArticle().getNick_name());
+                Log.e("article", article.getArticle().getProfile_img());
+                Log.e("article", article.getArticle().getProfile_img_thumb());
+
+                Log.e("article", article.getArticle().getArticle_id());
+                Log.e("article", article.getArticle().getArticle_photo_url());
+                Log.e("article", article.getArticle().getArticle_photo_thumb_url());
+                Log.e("article", article.getArticle().getArticle_text());
+                Log.e("article", article.getArticle().getArticle_created_at());
+
+                Log.e("article", article.getArticle().getArticle_like_cnt());
+                Log.e("article", article.getArticle().getArticle_view_cnt());
+                Log.e("article", article.getArticle().getArticle_comment_cnt());
+
+                Log.e("article", article.getArticle().getArticle_like_state());
+                Log.e("article", article.getArticle().getArticle_follow_state());
+
+                for(int i=0; i<article.getComment().length; i++) {
+                    Log.e("comment", article.getComment()[i].getUid());
+                    Log.e("comment", article.getComment()[i].getNick_name());
+                    Log.e("comment", article.getComment()[i].getProfile_img_thumb());
+                    Log.e("comment", article.getComment()[i].getComment_id());
+                    Log.e("comment", article.getComment()[i].getComment_text());
+                    Log.e("comment", article.getComment()[i].getComment_created_at());
+                }
+                for(int i=0; i<article.getGrid_article().length; i++) {
+                    Log.e("grid", article.getGrid_article()[i].getArticle_id());
+                    Log.e("grid", article.getGrid_article()[i].getArticle_photo_url());
+                    Log.e("grid", article.getGrid_article()[i].getArticle_photo_thumb_url());
+                }
+
+                if(article.isComment_error()) {
+                    Log.e("error", "comment_error : true");
+                } else {
+                    Log.e("error", "comment_error : false");
+                }
+                if(article.isGrid_error()) {
+                    Log.e("error", "grid_error : true");
+                } else {
+                    Log.e("error", "grid_error : false");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DetailViewResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
 //
 //    private void PostTestForComment(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6, String temp7){
 //        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
@@ -602,6 +609,9 @@ public class MainActivity extends AppCompatActivity {
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
                                 Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
                             }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
+                            }
 
 //                            Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getBottom_flag());
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getContents_error());
@@ -614,6 +624,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_id());
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
                                 Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
+                            }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
                             }
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getComment_text());
 
@@ -630,7 +643,11 @@ public class MainActivity extends AppCompatActivity {
 
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_id());
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
-                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url()); }
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
+                            }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
+                            }
 
 //                            Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getBottom_flag());
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getContents_error());
@@ -699,6 +716,9 @@ public class MainActivity extends AppCompatActivity {
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
                                 Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
                             }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
+                            }
 
 //                            Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getBottom_flag());
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getContents_error());
@@ -711,6 +731,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_id());
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
                                 Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
+                            }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
                             }
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getComment_text());
 
@@ -727,7 +750,11 @@ public class MainActivity extends AppCompatActivity {
 
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_id());
                             if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url() ) {
-                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url()); }
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_thumb_url());
+                            }
+                            if( null != likes.getLikes_item()[i].getContents()[j].getArticle_photo_url() ) {
+                                Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getArticle_photo_url());
+                            }
 
 //                            Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getBottom_flag());
                             Log.e("likes_item -> contents ", likes.getLikes_item()[i].getContents()[j].getContents_error());
