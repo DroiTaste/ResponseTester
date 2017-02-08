@@ -30,6 +30,7 @@ import rest.DetailViewResponse;
 import rest.FCMResponse;
 import rest.LikesResponse;
 import rest.MyPlaceResponse;
+import rest.ServerInfoResponse;
 import rest.UploadBoardResponse;
 import rest.UserResponse;
 import rest.UserResponseForLike;
@@ -48,22 +49,28 @@ public class MainActivity extends AppCompatActivity {
 
         //spinner(테스트 선택)
         final String[] methodList = {
-                "PostTestForDetailView"
-                , "PostTestForMyplace"
-                , "PostTestForLikes"
-                , "PostTestForLikesMine"
-                , "PostTokenRegiserForFCM"
-                , "PostTestUploadForFCM"
-                , "PostTestRegister"
+                "PostTestForDetailView(타임라인 디테일뷰)"
+                , "PostTestForMyplace(개인공간)"
+                , "PostTestForMyplaceUserEdit(개인공간 프로필수정)"
+                , "PostTestForLikes(팔로잉탭)"
+                , "PostTestForLikesMine(내게시물탭)"
+                , "PostTokenRegiserForFCM(fcm토큰저장)"
+                , "PostTestUploadForFCM(fcm테스트)"
+                , "PostTestRegister(중복체크)"
+                , "PostTestLogin(로그인리스폰값테스트)"
+                , "PostTestServerInfo(서버정보값테스트)"
         };
         final String[][] postList = {
                 {"tag", "uid", "article_id"}
                 , {"tag", "myplace_uid", "request_uid", "bottom_article" }
+                , {"tag", "uid", "name", "nick_name", "website", "self_introduce", "phone_number", "gender", "birthday" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "token", "login_state" }
                 , {"tag", "uid" }
                 , {"tag", "fb_id", "kt_id", "email", "nick_name" }
+                , {"tag", "email", "password" }
+                , {"tag", "uid", "photo_size" }
         };
         //test
 
@@ -119,18 +126,28 @@ public class MainActivity extends AppCompatActivity {
                 }else if(seleted_method_num == 1){
                     PostTestForMyplace(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
                 } else if(seleted_method_num == 2){
-                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
+//                    PostTestForMyplaceUserEdit(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]
+//                                            , param_post_values[4], param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8]);
+                    PostTestForMyplaceUserEdit("profile", param_post_values[1], param_post_values[2], param_post_values[3]
+                                            , param_post_values[4], param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8]);
                 } else if(seleted_method_num == 3){
-                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
                 } else if(seleted_method_num == 4){
+                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 5){
 //                    PostTokenRegiserForFCM(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
                     PostTokenRegiserForFCM("token_register", param_post_values[1], param_post_values[2], param_post_values[3]);
-                } else if(seleted_method_num == 5){
-//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestUploadForFCM("test_upload", param_post_values[1]);
                 } else if(seleted_method_num == 6){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestUploadForFCM("test_upload", param_post_values[1]);
+                } else if(seleted_method_num == 7){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
                     PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
+                } else if(seleted_method_num == 8){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 9){
+                    PostTestServerInfo("server_info", param_post_values[1], param_post_values[2]);
                 }
 
 
@@ -272,6 +289,76 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+    private void PostTestLogin(String tag, String temp1, String temp2){
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        Call<UserResponse> call = apiService.postTestLogin(tag, temp1, temp2);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                UserResponse user1 = response.body();
+
+                Toast.makeText(getApplicationContext(), user1.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), user1.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("error", user1.getError());
+                Log.e("error", user1.getError_msg());
+
+                if( null != user1.getUser()) {
+                    Log.e("user_info", user1.getUser().getUid());
+                    Log.e("user_info", user1.getUser().getName());
+                    Log.e("user_info", user1.getUser().getGender());
+                    Log.e("user_info", user1.getUser().getEmail());
+                    Log.e("user_info", user1.getUser().getNick_name());
+                    if(null != user1.getUser().getBirthday()) Log.e("user_info", user1.getUser().getBirthday());
+                    if(null != user1.getUser().getPhone_number()) Log.e("user_info", user1.getUser().getPhone_number());
+                    Log.e("user_info", user1.getUser().getCreated_at());
+
+                    if(null != user1.getUser().getLogin_method()) Log.e("user_info", user1.getUser().getLogin_method());
+                    if(null != user1.getUser().getFb_id()) Log.e("user_info", user1.getUser().getFb_id());
+                    if(null != user1.getUser().getKt_id()) Log.e("user_info", user1.getUser().getKt_id());
+                    if(null != user1.getUser().getProfile_img()) Log.e("user_info", user1.getUser().getProfile_img());
+                    if(null != user1.getUser().getSelf_introduce()) Log.e("user_info", user1.getUser().getSelf_introduce());
+                    if(null != user1.getUser().getWebsite()) Log.e("user_info", user1.getUser().getWebsite());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+    private void PostTestServerInfo(String tag, String temp1, String temp2){
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        Call<ServerInfoResponse> call = apiService.postTestServerInfo(tag, temp1, temp2);
+        call.enqueue(new Callback<ServerInfoResponse>() {
+            @Override
+            public void onResponse(Call<ServerInfoResponse> call, Response<ServerInfoResponse> response) {
+                ServerInfoResponse server = response.body();
+
+                Toast.makeText(getApplicationContext(), server.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), server.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("error", server.getError());
+                Log.e("error", server.getError_msg());
+
+                Log.e("server_info", server.getServer_base());
+                Log.e("server_info", server.getArticle_image_base());
+                Log.e("server_info", server.getProfile_image_base());
+            }
+
+            @Override
+            public void onFailure(Call<ServerInfoResponse> call, Throwable t) {
                 // Log error here since request failed
                 Log.e("tag", t.toString());
             }
@@ -609,6 +696,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void PostTestForMyplaceUserEdit(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6, String temp7, String temp8){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<MyPlaceResponse> call = apiService.postMyplaceUserEdit(tag, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8);
+
+        call.enqueue(new Callback<MyPlaceResponse>() {
+            @Override
+            public void onResponse(Call<MyPlaceResponse> call, Response<MyPlaceResponse> response) {
+                MyPlaceResponse myplace = response.body();
+
+                Toast.makeText(getApplicationContext(), myplace.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), myplace.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("fcm", myplace.getError());
+                Log.e("fcm", myplace.getError_msg());
+            }
+
+            @Override
+            public void onFailure(Call<MyPlaceResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+
+
+
+
     private void PostTestForLikes(String tag, String temp1, String temp2){
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 

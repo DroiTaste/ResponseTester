@@ -38,6 +38,18 @@ public interface ApiInterface {
                                         , @Field("nick_name") String nick_name);
     //post테스팅용
     @FormUrlEncoded
+    @POST("login/login.php")
+    Call<UserResponse> postTestLogin(@Field("tag") String tag
+                                        , @Field("email") String email
+                                        , @Field("password") String password);
+    //post테스팅용
+    @FormUrlEncoded
+    @POST("login/login.php")
+    Call<ServerInfoResponse> postTestServerInfo(@Field("tag") String tag
+                                        , @Field("uid") String uid
+                                        , @Field("photo_size") String photo_size);
+    //post테스팅용
+    @FormUrlEncoded
     @POST("timeline/timeline_btn.php")
     Call<UserResponseForLike> postTestLikeList(@Field("tag") String tag
                                         , @Field("uid") String uid
@@ -96,6 +108,18 @@ public interface ApiInterface {
                                             , @Field("myplace_uid") String myplace_uid
                                             , @Field("request_uid") String request_uid
                                             , @Field("bottom_article") String bottom_article);
+    @FormUrlEncoded
+    @POST("myplace/myplace_btn.php")
+    Call<MyPlaceResponse> postMyplaceUserEdit(@Field("tag") String tag
+                                            , @Field("uid") String uid
+                                            , @Field("name") String name
+                                            , @Field("nick_name") String nick_name
+                                            , @Field("website") String website
+                                            , @Field("self_introduce") String self_introduce
+                                            , @Field("phone_number") String phone_number
+                                            , @Field("gender") String gender
+                                            , @Field("birthday") String birthday);
+
     @FormUrlEncoded
     @POST("like/like.php")
     Call<LikesResponse> postLike(@Field("tag") String tag

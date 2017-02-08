@@ -14,10 +14,12 @@ public class User {
     private String gender;
     private String email;
     private String nick_name;
+    private String birthday;
     private String phone_number;
     private String profile_img;
     private String profile_img_thumb;
     private String self_introduce;
+    private String website;
     private String created_at;
     private String login_method;
     private String user_follow_state;
@@ -96,6 +98,14 @@ public class User {
         this.nick_name = nick_name;
     }
 
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
     public String getPhone_number() {
         return phone_number;
     }
@@ -126,6 +136,14 @@ public class User {
 
     public void setSelf_introduce(String self_introduce) {
         this.self_introduce = self_introduce;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     public String getCreated_at() {
