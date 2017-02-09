@@ -34,6 +34,7 @@ import rest.ServerInfoResponse;
 import rest.UploadBoardResponse;
 import rest.UserResponse;
 import rest.UserResponseForLike;
+import rest.WishlistResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,8 +51,10 @@ public class MainActivity extends AppCompatActivity {
         //spinner(테스트 선택)
         final String[] methodList = {
                 "PostTestForDetailView(타임라인 디테일뷰)"
+                , "PostTestForTimelineBtn(타임라인 버튼)"
                 , "PostTestForMyplace(개인공간)"
                 , "PostTestForMyplaceUserEdit(개인공간 프로필수정)"
+                , "PostTestForMyplaceWishlist(개인공간 위시리스트)"
                 , "PostTestForLikes(팔로잉탭)"
                 , "PostTestForLikesMine(내게시물탭)"
                 , "PostTokenRegiserForFCM(fcm토큰저장)"
@@ -62,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
         };
         final String[][] postList = {
                 {"tag", "uid", "article_id"}
+                , {"tag", "uid", "article_id", "comment_id", "bottom_comment", "comment_text", "article_text", "wishlist_text", "like_state", "wishlist_state" }
                 , {"tag", "myplace_uid", "request_uid", "bottom_article" }
                 , {"tag", "uid", "name", "nick_name", "website", "self_introduce", "phone_number", "gender", "birthday" }
+                , {"tag", "uid" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "token", "login_state" }
@@ -124,29 +129,34 @@ public class MainActivity extends AppCompatActivity {
                 if (seleted_method_num == 0) {
                     PostTestForDetailView(param_post_values[0], param_post_values[1], param_post_values[2]);
                 }else if(seleted_method_num == 1){
+                    PostTestForTimelineBtn(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]
+                                            ,param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8], param_post_values[9]);
+                }else if(seleted_method_num == 2){
                     PostTestForMyplace(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
-                } else if(seleted_method_num == 2){
+                } else if(seleted_method_num == 3){
 //                    PostTestForMyplaceUserEdit(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]
 //                                            , param_post_values[4], param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8]);
                     PostTestForMyplaceUserEdit("profile", param_post_values[1], param_post_values[2], param_post_values[3]
                                             , param_post_values[4], param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8]);
-                } else if(seleted_method_num == 3){
-                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
                 } else if(seleted_method_num == 4){
-                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestForMyplaceWishlist(param_post_values[0], param_post_values[1]);
                 } else if(seleted_method_num == 5){
+                    PostTestForLikes(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 6){
+                    PostTestForLikesMine(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 7){
 //                    PostTokenRegiserForFCM(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
                     PostTokenRegiserForFCM("token_register", param_post_values[1], param_post_values[2], param_post_values[3]);
-                } else if(seleted_method_num == 6){
-//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestUploadForFCM("test_upload", param_post_values[1]);
-                } else if(seleted_method_num == 7){
-//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
                 } else if(seleted_method_num == 8){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestUploadForFCM("test_upload", param_post_values[1]);
                 } else if(seleted_method_num == 9){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
+                } else if(seleted_method_num == 10){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 11){
                     PostTestServerInfo("server_info", param_post_values[1], param_post_values[2]);
                 }
 
@@ -480,19 +490,24 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.e("article", article.getArticle().getArticle_like_state());
                 Log.e("article", article.getArticle().getArticle_follow_state());
+                Log.e("article", article.getArticle().getArticle_wishlist_state());
 
-                for(int i=0; i<article.getComment().length; i++) {
-                    Log.e("comment", article.getComment()[i].getUid());
-                    Log.e("comment", article.getComment()[i].getNick_name());
-                    Log.e("comment", article.getComment()[i].getProfile_img_thumb());
-                    Log.e("comment", article.getComment()[i].getComment_id());
-                    Log.e("comment", article.getComment()[i].getComment_text());
-                    Log.e("comment", article.getComment()[i].getComment_created_at());
+                if(null != article.getComment()) {
+                    for (int i = 0; i < article.getComment().length; i++) {
+                        Log.e("comment", article.getComment()[i].getUid());
+                        Log.e("comment", article.getComment()[i].getNick_name());
+                        Log.e("comment", article.getComment()[i].getProfile_img_thumb());
+                        Log.e("comment", article.getComment()[i].getComment_id());
+                        Log.e("comment", article.getComment()[i].getComment_text());
+                        Log.e("comment", article.getComment()[i].getComment_created_at());
+                    }
                 }
-                for(int i=0; i<article.getGrid_article().length; i++) {
-                    Log.e("grid", article.getGrid_article()[i].getArticle_id());
-                    Log.e("grid", article.getGrid_article()[i].getArticle_photo_url());
-                    Log.e("grid", article.getGrid_article()[i].getArticle_photo_thumb_url());
+                if(null != article.getGrid_article()) {
+                    for (int i = 0; i < article.getGrid_article().length; i++) {
+                        Log.e("grid", article.getGrid_article()[i].getArticle_id());
+                        Log.e("grid", article.getGrid_article()[i].getArticle_photo_url());
+                        Log.e("grid", article.getGrid_article()[i].getArticle_photo_thumb_url());
+                    }
                 }
 
                 if(article.isComment_error()) {
@@ -630,6 +645,32 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //    }
 
+    private void PostTestForTimelineBtn(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6, String temp7, String temp8, String temp9){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<MyPlaceResponse> call = apiService.postTimelineBtn(tag, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9);
+
+        call.enqueue(new Callback<MyPlaceResponse>() {
+            @Override
+            public void onResponse(Call<MyPlaceResponse> call, Response<MyPlaceResponse> response) {
+                MyPlaceResponse timelineBtn = response.body();
+
+                Toast.makeText(getApplicationContext(), timelineBtn.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), timelineBtn.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("tag", timelineBtn.getError());
+                Log.e("tag", timelineBtn.getError_msg());
+
+            }
+
+            @Override
+            public void onFailure(Call<MyPlaceResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+
 
 
     private void PostTestForMyplace(String tag, String temp1, String temp2, String temp3){
@@ -715,6 +756,43 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MyPlaceResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+    private void PostTestForMyplaceWishlist(String tag, String temp1){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<WishlistResponse> call = apiService.postMyplaceWishlist(tag, temp1);
+
+        call.enqueue(new Callback<WishlistResponse>() {
+            @Override
+            public void onResponse(Call<WishlistResponse> call, Response<WishlistResponse> response) {
+                WishlistResponse wishlist = response.body();
+
+                Toast.makeText(getApplicationContext(), wishlist.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), wishlist.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("error", wishlist.getError());
+                Log.e("error", wishlist.getError_msg());
+
+                if(null != wishlist.getWishlist_article()) {
+                    for (int i = 0; i < wishlist.getWishlist_article().length; i++) {
+                        Log.e("wishlist", "i : " + i);
+                        Log.e("wishlist", wishlist.getWishlist_article()[i].getArticle_id());
+                        if (null != wishlist.getWishlist_article()[i].getArticle_photo_url())
+                            Log.e("wishlist", wishlist.getWishlist_article()[i].getArticle_photo_url());
+                        if (null != wishlist.getWishlist_article()[i].getArticle_photo_thumb_url())
+                            Log.e("wishlist", wishlist.getWishlist_article()[i].getArticle_photo_thumb_url());
+                        if (null != wishlist.getWishlist_article()[i].getWishlist_text())
+                            Log.e("wishlist", wishlist.getWishlist_article()[i].getWishlist_text());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WishlistResponse> call, Throwable t) {
                 // Log error here since request failed
                 Log.e("tag", t.toString());
             }

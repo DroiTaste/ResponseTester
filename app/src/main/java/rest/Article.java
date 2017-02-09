@@ -24,6 +24,9 @@ public class Article {
 
     private String article_like_state;
     private String article_follow_state;
+    private String article_wishlist_state;
+
+    private String wishlist_text;
 
     public Article(String uid, String nick_name, String profile_img, String profile_img_thumb, String article_id, String article_photo_url, String article_photo_thumb_url, String article_text, String article_secret, String article_created_at, String article_like_cnt, String article_view_cnt, String article_comment_cnt, String article_like_state, String article_follow_state) {
         this.uid = uid;
@@ -161,5 +164,21 @@ public class Article {
 
     public void setArticle_follow_state(String article_follow_state) {
         this.article_follow_state = article_follow_state;
+    }
+
+    public String getArticle_wishlist_state() {
+        return article_wishlist_state;
+    }
+
+    public void setArticle_wishlist_state(String article_wishlist_state) {
+        this.article_wishlist_state = article_wishlist_state;
+    }
+
+    public String getWishlist_text() {
+        return wishlist_text;
+    }
+
+    public void setWishlist_text(String wishlist_text) {
+        this.wishlist_text = wishlist_text;
     }
 }

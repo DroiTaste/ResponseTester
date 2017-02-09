@@ -92,7 +92,21 @@ public interface ApiInterface {
                                         , @Field("bottom_comment") String bottom_comment
                                         , @Field("comment_text") String comment_text
                                         , @Field("article_text") String article_text
+                                        , @Field("wishlist_text") String wishlist_text
                                         , @Field("like_state") String like_state);
+    //post테스팅용
+    @FormUrlEncoded
+    @POST("timeline/timeline_btn.php")
+    Call<MyPlaceResponse> postTimelineBtn(@Field("tag") String tag
+                                        , @Field("uid") String uid
+                                        , @Field("article_id") String article_id
+                                        , @Field("comment_id") String comment_id
+                                        , @Field("bottom_comment") String bottom_comment
+                                        , @Field("comment_text") String comment_text
+                                        , @Field("article_text") String article_text
+                                        , @Field("wishlist_text") String wishlist_text
+                                        , @Field("like_state") String like_state
+                                        , @Field("wishlist_state") String wishlist_state);
 
     //post테스팅용(팔로우관련)
     @FormUrlEncoded
@@ -125,6 +139,10 @@ public interface ApiInterface {
     Call<LikesResponse> postLike(@Field("tag") String tag
                                             , @Field("uid") String myplace_uid
                                             , @Field("bottom_item") String bottom_item);
+    @FormUrlEncoded
+    @POST("myplace/myplace_btn.php")
+    Call<WishlistResponse> postMyplaceWishlist(@Field("tag") String tag
+                                            , @Field("uid") String uid);
 
     @FormUrlEncoded
     @POST("fcm/fcm.php")
