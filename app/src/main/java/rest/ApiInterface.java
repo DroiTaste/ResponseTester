@@ -31,6 +31,21 @@ public interface ApiInterface {
     //post테스팅용
     @FormUrlEncoded
     @POST("login/login.php")
+    Call<UserResponse> postTestRegisterMember(@Field("tag") String tag
+                                        , @Field("name") String name
+                                        , @Field("gender") String gender
+                                        , @Field("email") String email
+                                        , @Field("nick_name") String nick_name
+                                        , @Field("password") String password
+                                        , @Field("phone_number") String phone_number
+                                        , @Field("login_method") String login_method
+                                        , @Field("fb_id") String fb_id
+                                        , @Field("kt_id") String kt_id
+                                        , @Field("profile_img") String profile_img
+                                        , @Field("profile_img_thumb") String profile_img_thumb);
+    //post테스팅용
+    @FormUrlEncoded
+    @POST("login/login.php")
     Call<UserResponse> postTestRegister(@Field("tag") String tag
                                         , @Field("fb_id") String fb_id
                                         , @Field("kt_id") String kt_id

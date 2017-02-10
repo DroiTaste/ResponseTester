@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 , "PostTestForLikesMine(내게시물탭)"
                 , "PostTokenRegiserForFCM(fcm토큰저장)"
                 , "PostTestUploadForFCM(fcm테스트)"
+                , "PostTestRegisterMember(회원가입테스트)"
                 , "PostTestRegister(중복체크)"
                 , "PostTestLogin(로그인리스폰값테스트)"
                 , "PostTestServerInfo(서버정보값테스트)"
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 , {"tag", "uid", "bottom_item" }
                 , {"tag", "uid", "token", "login_state" }
                 , {"tag", "uid" }
+                , {"tag", "name", "gender", "email", "nick_name", "password", "phone_number", "login_method", "fb_id", "kt_id", "profile_img", "profile_img_thumb" }
                 , {"tag", "fb_id", "kt_id", "email", "nick_name" }
                 , {"tag", "email", "password" }
                 , {"tag", "uid", "photo_size" }
@@ -152,11 +154,16 @@ public class MainActivity extends AppCompatActivity {
                     PostTestUploadForFCM("test_upload", param_post_values[1]);
                 } else if(seleted_method_num == 9){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
+                    PostTestRegisterMember(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]
+                                            , param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8], param_post_values[9]
+                                            , param_post_values[10], param_post_values[11]);
                 } else if(seleted_method_num == 10){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
                 } else if(seleted_method_num == 11){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                } else if(seleted_method_num == 12){
                     PostTestServerInfo("server_info", param_post_values[1], param_post_values[2]);
                 }
 
@@ -265,6 +272,49 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
+    private void PostTestRegisterMember(String tag, String temp1, String temp2, String temp3, String temp4
+                                            , String temp5, String temp6, String temp7, String temp8
+                                            , String temp9, String temp10, String temp11){
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        Call<UserResponse> call = apiService.postTestRegisterMember(tag, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11);
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                UserResponse user1 = response.body();
+
+                Toast.makeText(getApplicationContext(), user1.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), user1.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                Log.e("error", user1.getError());
+                Log.e("error", user1.getError_msg());
+
+                if( null != user1.getUser()) {
+                    if(null != user1.getUser().getUid()) Log.e("user_info", user1.getUser().getUid());
+                    if(null != user1.getUser().getName()) Log.e("user_info", user1.getUser().getName());
+                    if(null != user1.getUser().getGender()) Log.e("user_info", user1.getUser().getGender());
+                    if(null != user1.getUser().getEmail()) Log.e("user_info", user1.getUser().getEmail());
+                    if(null != user1.getUser().getNick_name()) Log.e("user_info", user1.getUser().getNick_name());
+                    if(null != user1.getUser().getPhone_number()) Log.e("user_info", user1.getUser().getPhone_number());
+                    if(null != user1.getUser().getCreated_at()) Log.e("user_info", user1.getUser().getCreated_at());
+
+                    if(null != user1.getUser().getLogin_method()) Log.e("user_info", user1.getUser().getLogin_method());
+                    if(null != user1.getUser().getFb_id()) Log.e("user_info", user1.getUser().getFb_id());
+                    if(null != user1.getUser().getKt_id()) Log.e("user_info", user1.getUser().getKt_id());
+                    if(null != user1.getUser().getProfile_img()) Log.e("user_info", user1.getUser().getProfile_img());
+                    if(null != user1.getUser().getSelf_introduce()) Log.e("user_info", user1.getUser().getSelf_introduce());
+                    if(null != user1.getUser().getWebsite()) Log.e("user_info", user1.getUser().getWebsite());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
     private void PostTestRegister(String tag, String temp1, String temp2, String temp3, String temp4){
         ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
@@ -282,18 +332,20 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("error", user1.getError_msg());
 
                 if( null != user1.getUser()) {
-                    Log.e("user_info", user1.getUser().getUid());
-                    Log.e("user_info", user1.getUser().getName());
-                    Log.e("user_info", user1.getUser().getGender());
-                    Log.e("user_info", user1.getUser().getEmail());
-                    Log.e("user_info", user1.getUser().getNick_name());
-                    Log.e("user_info", user1.getUser().getPhone_number());
-                    Log.e("user_info", user1.getUser().getCreated_at());
+                    if(null != user1.getUser().getUid()) Log.e("user_info", user1.getUser().getUid());
+                    if(null != user1.getUser().getName()) Log.e("user_info", user1.getUser().getName());
+                    if(null != user1.getUser().getGender()) Log.e("user_info", user1.getUser().getGender());
+                    if(null != user1.getUser().getEmail()) Log.e("user_info", user1.getUser().getEmail());
+                    if(null != user1.getUser().getNick_name()) Log.e("user_info", user1.getUser().getNick_name());
+                    if(null != user1.getUser().getPhone_number()) Log.e("user_info", user1.getUser().getPhone_number());
+                    if(null != user1.getUser().getCreated_at()) Log.e("user_info", user1.getUser().getCreated_at());
 
-                    Log.e("user_info", user1.getUser().getLogin_method());
-                    Log.e("user_info", user1.getUser().getFb_id());
-                    Log.e("user_info", user1.getUser().getKt_id());
-                    Log.e("user_info", user1.getUser().getProfile_img());
+                    if(null != user1.getUser().getLogin_method()) Log.e("user_info", user1.getUser().getLogin_method());
+                    if(null != user1.getUser().getFb_id()) Log.e("user_info", user1.getUser().getFb_id());
+                    if(null != user1.getUser().getKt_id()) Log.e("user_info", user1.getUser().getKt_id());
+                    if(null != user1.getUser().getProfile_img()) Log.e("user_info", user1.getUser().getProfile_img());
+                    if(null != user1.getUser().getSelf_introduce()) Log.e("user_info", user1.getUser().getSelf_introduce());
+                    if(null != user1.getUser().getWebsite()) Log.e("user_info", user1.getUser().getWebsite());
                 }
             }
 
