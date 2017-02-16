@@ -31,6 +31,7 @@ import rest.FCMResponse;
 import rest.LikesResponse;
 import rest.MyPlaceResponse;
 import rest.ServerInfoResponse;
+import rest.TimelineBtnResponse;
 import rest.UploadBoardResponse;
 import rest.UserResponse;
 import rest.UserResponseForLike;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         };
         final String[][] postList = {
                 {"tag", "uid", "article_id"}
-                , {"tag", "uid", "article_id", "comment_id", "bottom_comment", "comment_text", "article_text", "wishlist_text", "like_state", "wishlist_state" }
+                , {"tag", "uid", "article_id", "comment_id", "bottom_comment", "comment_text", "article_text", "wishlist_text", "like_state", "wishlist_state", "block_uid", "block_state", "reason"}
                 , {"tag", "myplace_uid", "request_uid", "bottom_article" }
                 , {"tag", "uid", "name", "nick_name", "website", "self_introduce", "phone_number", "gender", "birthday" }
                 , {"tag", "uid" }
@@ -132,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
                     PostTestForDetailView(param_post_values[0], param_post_values[1], param_post_values[2]);
                 }else if(seleted_method_num == 1){
                     PostTestForTimelineBtn(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]
-                                            ,param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8], param_post_values[9]);
+                                            ,param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8], param_post_values[9]
+                                            ,param_post_values[10], param_post_values[11], param_post_values[12]);
                 }else if(seleted_method_num == 2){
                     PostTestForMyplace(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
                 } else if(seleted_method_num == 3){
@@ -414,7 +416,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("error", server.getError());
                 Log.e("error", server.getError_msg());
 
-                Log.e("server_info", server.getServer_base());
+                Log.e("server_info", server.getPhp_server_base());
+                Log.e("server_info", server.getPhoto_server_base());
                 Log.e("server_info", server.getArticle_image_base());
                 Log.e("server_info", server.getProfile_image_base());
             }
@@ -697,15 +700,16 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private void PostTestForTimelineBtn(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6, String temp7, String temp8, String temp9){
+    private void PostTestForTimelineBtn(String tag, String temp1, String temp2, String temp3, String temp4, String temp5, String temp6
+                                            , String temp7, String temp8, String temp9, String temp10, String temp11, String temp12){
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
-        Call<MyPlaceResponse> call = apiService.postTimelineBtn(tag, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9);
+        Call<TimelineBtnResponse> call = apiService.postTimelineBtn(tag, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11, temp12);
 
-        call.enqueue(new Callback<MyPlaceResponse>() {
+        call.enqueue(new Callback<TimelineBtnResponse>() {
             @Override
-            public void onResponse(Call<MyPlaceResponse> call, Response<MyPlaceResponse> response) {
-                MyPlaceResponse timelineBtn = response.body();
+            public void onResponse(Call<TimelineBtnResponse> call, Response<TimelineBtnResponse> response) {
+                TimelineBtnResponse timelineBtn = response.body();
 
                 Toast.makeText(getApplicationContext(), timelineBtn.getError(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), timelineBtn.getError_msg(), Toast.LENGTH_SHORT).show();
@@ -713,10 +717,21 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("tag", timelineBtn.getError());
                 Log.e("tag", timelineBtn.getError_msg());
 
+
+                if(null != timelineBtn.getUser()) {
+                    for (int i = 0; i < timelineBtn.getUser().length; i++) {
+                        Log.e("user", "i : " + i);
+                        if (null != timelineBtn.getUser()[i].getUid()) Log.e("user", timelineBtn.getUser()[i].getUid());
+                        if (null != timelineBtn.getUser()[i].getName()) Log.e("user", timelineBtn.getUser()[i].getName());
+                        if (null != timelineBtn.getUser()[i].getNick_name()) Log.e("user", timelineBtn.getUser()[i].getNick_name());
+                        if (null != timelineBtn.getUser()[i].getProfile_img_thumb()) Log.e("user", timelineBtn.getUser()[i].getProfile_img_thumb());
+                    }
+                }
+
             }
 
             @Override
-            public void onFailure(Call<MyPlaceResponse> call, Throwable t) {
+            public void onFailure(Call<TimelineBtnResponse> call, Throwable t) {
                 // Log error here since request failed
                 Log.e("tag", t.toString());
             }

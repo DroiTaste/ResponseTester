@@ -6,19 +6,28 @@ package rest;
 
 public class ServerInfoResponse {
 
-    private String server_base;
+    private String php_server_base;
+    private String photo_server_base;
     private String article_image_base;
     private String profile_image_base;
 
     private String error;
     private String error_msg;
 
-    public String getServer_base() {
-        return server_base;
+    public String getPhp_server_base() {
+        return php_server_base;
     }
 
-    public void setServer_base(String server_base) {
-        this.server_base = server_base;
+    public void setPhp_server_base(String php_server_base) {
+        this.php_server_base = php_server_base;
+    }
+
+    public String getPhoto_server_base() {
+        return photo_server_base;
+    }
+
+    public void setPhoto_server_base(String photo_server_base) {
+        this.photo_server_base = photo_server_base;
     }
 
     public String getArticle_image_base() {

@@ -112,7 +112,7 @@ public interface ApiInterface {
     //post테스팅용
     @FormUrlEncoded
     @POST("timeline/timeline_btn.php")
-    Call<MyPlaceResponse> postTimelineBtn(@Field("tag") String tag
+    Call<TimelineBtnResponse> postTimelineBtn(@Field("tag") String tag
                                         , @Field("uid") String uid
                                         , @Field("article_id") String article_id
                                         , @Field("comment_id") String comment_id
@@ -121,7 +121,10 @@ public interface ApiInterface {
                                         , @Field("article_text") String article_text
                                         , @Field("wishlist_text") String wishlist_text
                                         , @Field("like_state") String like_state
-                                        , @Field("wishlist_state") String wishlist_state);
+                                        , @Field("wishlist_state") String wishlist_state
+                                        , @Field("block_uid") String block_uid
+                                        , @Field("block_state") String block_state
+                                        , @Field("reason") String reason);
 
     //post테스팅용(팔로우관련)
     @FormUrlEncoded
