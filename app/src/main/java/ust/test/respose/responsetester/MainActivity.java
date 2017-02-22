@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 , "PostTokenRegiserForFCM(fcm토큰저장)"
                 , "PostTestUploadForFCM(fcm테스트)"
                 , "PostTestRegisterMember(회원가입테스트)"
+                , "PostTestContactFollow(연락처팔로추가)"
                 , "PostTestRegister(중복체크)"
                 , "PostTestLogin(로그인리스폰값테스트)"
                 , "PostTestServerInfo(서버정보값테스트)"
@@ -76,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
                 , {"tag", "uid", "token", "login_state" }
                 , {"tag", "uid" }
                 , {"tag", "name", "gender", "email", "nick_name", "password", "phone_number", "login_method", "fb_id", "kt_id", "profile_img", "profile_img_thumb" }
+                , {"tag", "phone_number_01", "phone_number_02", "phone_number_03" }
                 , {"tag", "fb_id", "kt_id", "email", "nick_name" }
-                , {"tag", "email", "password" }
+                , {"tag", "uid(임시)", "email", "password" }
                 , {"tag", "uid", "photo_size" }
         };
         //test
@@ -160,12 +162,21 @@ public class MainActivity extends AppCompatActivity {
                                             , param_post_values[5], param_post_values[6], param_post_values[7], param_post_values[8], param_post_values[9]
                                             , param_post_values[10], param_post_values[11]);
                 } else if(seleted_method_num == 10){
-//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
+                    String[] param_post_values_phoneNumber = {param_post_values[1], param_post_values[2], param_post_values[3]};
+                    String[] param_post_values_name = {"testname01", "testname02", "testname03"};
+//                    ArrayList<String> param_post_values_arraytest = new ArrayList<String>();
+//                    param_post_values_arraytest.add(0, param_post_values[1]);
+//                    param_post_values_arraytest.add(1, param_post_values[2]);
+//                    param_post_values_arraytest.add(2, param_post_values[3]);
+//                    PostTestContactFollow(param_post_values[0], param_post_values_arraytest, param_post_values_arraytest.get(0));
+                    PostTestContactFollow(param_post_values[0], param_post_values_name, param_post_values_phoneNumber);
                 } else if(seleted_method_num == 11){
 //                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
-                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2]);
+                    PostTestRegister(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3], param_post_values[4]);
                 } else if(seleted_method_num == 12){
+//                    PostTestUploadForFCM(param_post_values[0], param_post_values[1]);
+                    PostTestLogin(param_post_values[0], param_post_values[1], param_post_values[2], param_post_values[3]);
+                } else if(seleted_method_num == 13){
                     PostTestServerInfo("server_info", param_post_values[1], param_post_values[2]);
                 }
 
@@ -358,11 +369,45 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void PostTestLogin(String tag, String temp1, String temp2){
+//    private void PostTestContactFollow(String tag, ArrayList<String> temp1, String temp2){
+    private void PostTestContactFollow(String tag, String[] temp1, String[] temp2){
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<TimelineBtnResponse> call = apiService.postTestContactFollow(tag, temp1, temp2);
+        call.enqueue(new Callback<TimelineBtnResponse>() {
+            @Override
+            public void onResponse(Call<TimelineBtnResponse> call, Response<TimelineBtnResponse> response) {
+                TimelineBtnResponse user1 = response.body();
+
+                Toast.makeText(getApplicationContext(), user1.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), user1.getError_msg(), Toast.LENGTH_SHORT).show();
+
+                if (null != user1.getError()) Log.e("error", user1.getError());
+                if (null != user1.getError_msg()) Log.e("error", user1.getError_msg());
+
+                if( null != user1.getUser()) {
+                    for(int i=0; i<user1.getUser().length; i++) {
+                        Log.e("contact_follow ", "i : " + i);
+                        if (null != user1.getUser()[i].getUid()) Log.e("contact_follow", user1.getUser()[i].getUid());
+                        if (null != user1.getUser()[i].getName()) Log.e("contact_follow", user1.getUser()[i].getName());
+                        if (null != user1.getUser()[i].getNick_name()) Log.e("contact_follow", user1.getUser()[i].getNick_name());
+                        if (null != user1.getUser()[i].getProfile_img()) Log.e("contact_follow", user1.getUser()[i].getProfile_img());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TimelineBtnResponse> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("tag", t.toString());
+            }
+        });
+    }
+    private void PostTestLogin(String tag, String temp1, String temp2, String temp3){
         ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
 
-        Call<UserResponse> call = apiService.postTestLogin(tag, temp1, temp2);
+        Call<UserResponse> call = apiService.postTestLogin(tag, temp1, temp2, temp3);
         call.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -753,48 +798,54 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), myplace.getError(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), myplace.getError_msg(), Toast.LENGTH_SHORT).show();
 
-                Log.e("myplace", myplace.getPlace_info().getName());
-                Log.e("myplace", myplace.getPlace_info().getNick_name());
-                Log.e("myplace", myplace.getPlace_info().getProfile_img());
-                Log.e("myplace", myplace.getPlace_info().getSelf_introduce());
+                if(null != myplace.getPlace_info()) {
+                    if (null != myplace.getPlace_info().getName()) Log.e("myplace", myplace.getPlace_info().getName());
+                    if (null != myplace.getPlace_info().getNick_name()) Log.e("myplace", myplace.getPlace_info().getNick_name());
+                    if (null != myplace.getPlace_info().getProfile_img()) Log.e("myplace", myplace.getPlace_info().getProfile_img());
+                    if (null != myplace.getPlace_info().getSelf_introduce()) Log.e("myplace", myplace.getPlace_info().getSelf_introduce());
 
-                Log.e("myplace", myplace.getPlace_info().getArticle_count());
-                Log.e("myplace", myplace.getPlace_info().getFollower_count());
-                Log.e("myplace", myplace.getPlace_info().getFollowing_count());
-
-                Log.e("myplace", myplace.getCouple_info().getName());
-                Log.e("myplace", myplace.getCouple_info().getNick_name());
-                Log.e("myplace", myplace.getCouple_info().getProfile_img());
-                Log.e("myplace", myplace.getCouple_info().getSelf_introduce());
-
-                Log.e("myplace", myplace.getCouple_info().getArticle_count());
-                Log.e("myplace", myplace.getCouple_info().getFollower_count());
-                Log.e("myplace", myplace.getCouple_info().getFollowing_count());
-
-                Log.e("myplace", myplace.getCouple_info().getCouple_day());
-
-                for(int i=0; i<myplace.getArticle().length; i++) {
-                    Log.e("myplace", "i : "+i);
-                    Log.e("myplace", myplace.getArticle()[i].getUid());
-                    Log.e("myplace", myplace.getArticle()[i].getNick_name());
-                    Log.e("myplace", myplace.getArticle()[i].getProfile_img());
-                    Log.e("myplace", myplace.getArticle()[i].getProfile_img_thumb());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_id());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_photo_url());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_photo_thumb_url());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_text());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_secret());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_created_at());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_like_cnt());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_view_cnt());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_comment_cnt());
-                    Log.e("myplace", myplace.getArticle()[i].getArticle_like_state());
+                    if (null != myplace.getPlace_info().getArticle_count()) Log.e("myplace", myplace.getPlace_info().getArticle_count());
+                    if (null != myplace.getPlace_info().getFollower_count()) Log.e("myplace", myplace.getPlace_info().getFollower_count());
+                    if (null != myplace.getPlace_info().getFollowing_count()) Log.e("myplace", myplace.getPlace_info().getFollowing_count());
                 }
 
-                Log.e("myplace", myplace.getError());
-                Log.e("myplace", myplace.getError_msg());
-                Log.e("myplace article_error", myplace.getArticle_error());
-                Log.e("myplace couple_error", myplace.getCouple_error());
+                if(null != myplace.getCouple_info()) {
+                    if (null != myplace.getCouple_info().getName()) Log.e("myplace", myplace.getCouple_info().getName());
+                    if (null != myplace.getCouple_info().getNick_name()) Log.e("myplace", myplace.getCouple_info().getNick_name());
+                    if (null != myplace.getCouple_info().getProfile_img()) Log.e("myplace", myplace.getCouple_info().getProfile_img());
+                    if (null != myplace.getCouple_info().getSelf_introduce()) Log.e("myplace", myplace.getCouple_info().getSelf_introduce());
+
+                    if (null != myplace.getCouple_info().getArticle_count()) Log.e("myplace", myplace.getCouple_info().getArticle_count());
+                    if (null != myplace.getCouple_info().getFollower_count()) Log.e("myplace", myplace.getCouple_info().getFollower_count());
+                    if (null != myplace.getCouple_info().getFollowing_count()) Log.e("myplace", myplace.getCouple_info().getFollowing_count());
+
+                    if (null != myplace.getCouple_info().getCouple_day()) Log.e("myplace", myplace.getCouple_info().getCouple_day());
+                }
+
+                if(null != myplace.getArticle()) {
+                    for (int i = 0; i < myplace.getArticle().length; i++) {
+                        Log.e("myplace", "i : " + i);
+                        if (null != myplace.getArticle()[i].getUid()) Log.e("myplace", myplace.getArticle()[i].getUid());
+                        if (null != myplace.getArticle()[i].getNick_name()) Log.e("myplace", myplace.getArticle()[i].getNick_name());
+                        if (null != myplace.getArticle()[i].getProfile_img()) Log.e("myplace", myplace.getArticle()[i].getProfile_img());
+                        if (null != myplace.getArticle()[i].getProfile_img_thumb()) Log.e("myplace", myplace.getArticle()[i].getProfile_img_thumb());
+                        if (null != myplace.getArticle()[i].getArticle_id()) Log.e("myplace", myplace.getArticle()[i].getArticle_id());
+                        if (null != myplace.getArticle()[i].getArticle_photo_url()) Log.e("myplace", myplace.getArticle()[i].getArticle_photo_url());
+                        if (null != myplace.getArticle()[i].getArticle_photo_thumb_url()) Log.e("myplace", myplace.getArticle()[i].getArticle_photo_thumb_url());
+                        if (null != myplace.getArticle()[i].getArticle_text()) Log.e("myplace", myplace.getArticle()[i].getArticle_text());
+                        if (null != myplace.getArticle()[i].getArticle_secret()) Log.e("myplace", myplace.getArticle()[i].getArticle_secret());
+                        if (null != myplace.getArticle()[i].getArticle_created_at()) Log.e("myplace", myplace.getArticle()[i].getArticle_created_at());
+                        if (null != myplace.getArticle()[i].getArticle_like_cnt()) Log.e("myplace", myplace.getArticle()[i].getArticle_like_cnt());
+                        if (null != myplace.getArticle()[i].getArticle_view_cnt()) Log.e("myplace", myplace.getArticle()[i].getArticle_view_cnt());
+                        if (null != myplace.getArticle()[i].getArticle_comment_cnt()) Log.e("myplace", myplace.getArticle()[i].getArticle_comment_cnt());
+                        if (null != myplace.getArticle()[i].getArticle_like_state()) Log.e("myplace", myplace.getArticle()[i].getArticle_like_state());
+                    }
+                }
+
+                if (null != myplace.getError()) Log.e("myplace", myplace.getError());
+                if (null != myplace.getError_msg()) Log.e("myplace", myplace.getError_msg());
+                if (null != myplace.getArticle_error()) Log.e("myplace article_error", myplace.getArticle_error());
+                if (null != myplace.getCouple_error()) Log.e("myplace couple_error", myplace.getCouple_error());
             }
 
             @Override

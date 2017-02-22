@@ -1,6 +1,8 @@
 package rest;
 
 
+import java.util.ArrayList;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -54,7 +56,15 @@ public interface ApiInterface {
     //post테스팅용
     @FormUrlEncoded
     @POST("login/login.php")
+    Call<TimelineBtnResponse> postTestContactFollow(@Field("tag") String tag
+//                                        , @Field("name[]") ArrayList<String> name
+                                        , @Field("name[]") String[] name
+                                        , @Field("phone_number[]") String[] phone_number);
+    //post테스팅용
+    @FormUrlEncoded
+    @POST("login/login.php")
     Call<UserResponse> postTestLogin(@Field("tag") String tag
+                                        , @Field("uid") String uid
                                         , @Field("email") String email
                                         , @Field("password") String password);
     //post테스팅용
